@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <title>Reactive China Map</title>
+    <link href="css/index.css" rel="stylesheet" type="text/css" />
+    <link href="css/map.css" rel="stylesheet" type="text/css" />
+    <script src="js/d3.v6.min.js"></script>
+    <script src="js/d3-simple-slider.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div id='map_grid' class="grid"></div>
+    </div>
+    <script src="scripts/Observer.js"></script>
+    <script src="scripts/Map.js"></script>
+    <script>
+        let OM = new ObserverManagement();
+        let map = map_main(OM);
+    </script>
+</body>
+</html>
