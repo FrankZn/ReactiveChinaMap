@@ -1,6 +1,7 @@
 # Reactive China Map
 
 可交互式中国地图。
+[Github Pages Demo](https://frankzn.github.io/ReactiveChinaMap)
 
 ## TODO
 
