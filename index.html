@@ -15,11 +15,11 @@
     <div class="container">
         <div id='map_grid' class="grid"></div>
     </div>
-    <script src="scripts/Observer.js"></script>
-    <script src="scripts/Map.js"></script>
-    <script>
+    <script type="module">
+        import main from './scripts/Map.js';
+        import ObserverManagement from './scripts/Observer.js';
         let OM = new ObserverManagement();
-        let map = map_main(OM);
+        let map = main(OM);
     </script>
 </body>
 </html>

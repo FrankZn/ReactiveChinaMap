@@ -17,7 +17,7 @@ class Topic {
     }
 }
 
-class ObserverManagement {
+export default class ObserverManagement {
     #topics = {};
 
     constructor() {
