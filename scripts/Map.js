@@ -179,6 +179,47 @@ class SelectedTable {
   }
 }
 
+class Zoom {
+  #OM;
+
+  setOM(OM) {
+    this.#OM = OM;
+    return this;
+  }
+
+  setSvg(svg) {
+    const rect = svg.node().getBoundingClientRect();
+    const zoom = d3.zoom()
+      .translateExtent([[-5, -5], [rect.width+5, rect.height+5]])
+      .scaleExtent([1, 256])
+      .on("start", this.handle_zoom_start)
+      .on("zoom", this.handle_zoom)
+      .on("end", this.handle_zoom_end);
+    svg.call(zoom);
+  }
+
+  #k_before_zoom = 1;
+  handle_zoom_start = (event) => {
+    const transform = event.transform;
+    this.#k_before_zoom = transform.k;
+  }
+
+  handle_zoom = (event) => {
+    const transform = event.transform;
+    this.#OM.publish("event-zoom-transform", {transform});
+  }
+
+  handle_zoom_end = (event) => {
+    const transform = event.transform;
+    if (transform.k == 1) {
+      this.#OM.publish("event-render-adcode", {adcode: "100000"});
+    }
+    else if (transform.k < 4 && transform.k < this.#k_before_zoom) {
+      this.#OM.publish("event-render-parent", {});
+    }
+  }
+}
+
 class MapMain {
   #OM;
   #pre_selected = [];
@@ -190,27 +231,20 @@ class MapMain {
 
   setOM(OM) {
     this.#OM = OM;
-    OM.subscribe("state-update-region-selected", this.handle_state_update_region_selected)
+    OM.subscribe("state-update-region-selected", this.handle_state_update_region_selected);
+    OM.subscribe("event-render-adcode", this.handle_event_render_adcode);
+    OM.subscribe("event-zoom-transform", this.handle_event_zoom_transform);
+    OM.subscribe("event-render-parent", this.handle_event_render_parent);
     return this;
   }
 
   setSvg(svg) {
-    this.svg = svg;
     const rect = svg.node().getBoundingClientRect();
     this.translate = [rect.width/2, rect.height/2];
     this.projection = d3.geoMercator()
         .center(this.center)
         .scale(this.scale)
         .translate(this.translate);
-
-    this.zoom = d3.zoom()
-        .translateExtent([[-5, -5], [rect.width+5, rect.height+5]])
-        .scaleExtent([1, 256])
-        .on("start", this.handle_zoom_start)
-        .on("zoom", this.handle_zoom)
-        .on("end", this.handle_zoom_end);
-    
-    svg.call(this.zoom);
 
     // Add groups
     this.map_g = svg.append("g")
@@ -228,27 +262,22 @@ class MapMain {
     return this;
   }
 
-  handle_zoom_start = () => {
-
+  handle_state_update_region_selected = (selected) => {
+    this.update_map(selected);
   }
 
-  handle_zoom = (event) => {
-    let transform = event.transform;
+  handle_event_render_adcode = ({adcode}) => {
+    return this.render(adcode);
+  }
+
+  handle_event_zoom_transform = ({transform}) => {
     this.map_g.attr("transform", transform);
   }
 
-  handle_zoom_end = (event) => {
-    const transform = event.transform;
-    if (transform.k == 1) {
-      this.render("100000");
-    }
-    else if (transform.k < 3 && this.state.get_parent(this.adcode)) {
+  handle_event_render_parent = () => {
+    if(this.state.get_parent(this.adcode)) {
       this.render(this.state.get_parent(this.adcode));
     }
-  }
-
-  handle_state_update_region_selected = (selected) => {
-    this.update_map(selected);
   }
 
   update_map = async (selected) => {
@@ -398,6 +427,11 @@ async function map_main(OM) {
       .setSvg(svg)
       .setState(state);
   map.render(map.adcode);
+
+  const zoom = new Zoom();
+  zoom
+      .setOM(OM)
+      .setSvg(svg);
 
   const tooltip = new MapTooltip();
   tooltip
