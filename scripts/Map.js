@@ -1,11 +1,16 @@
-import Zoom from "./Zoom.js"
+import Zoom from "./Zoom.js";
 
 const __CONFIG__ = {
-  main_id: "map_grid"
+  main_id: "map",
+  sidebar_id: "sidebar"
 }
 
 function select_main(config=__CONFIG__) {
   return d3.select(`#${config.main_id}`);
+}
+
+function select_sidebar(config=__CONFIG__) {
+  return d3.select(`#${config.sidebar_id}`);
 }
 
 function properties2html(properties) {
@@ -376,6 +381,7 @@ class TimeSlider {
 export default async function map_main(OM) {
   
   const div = select_main();
+  const sidebar = select_sidebar();
   const svg = div.append("svg").classed("map", true);
 
   const state = new StateMain();
@@ -401,7 +407,7 @@ export default async function map_main(OM) {
 
   const selected_table = new SelectedTable();
   selected_table
-      .setDiv(div)
+      .setDiv(sidebar)
       .setOM(OM)
       .setState(state)
       .render();

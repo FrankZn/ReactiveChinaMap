@@ -1,5 +1,6 @@
-div.grid {
+div.map {
     overflow: hidden;
+    height: 100%;
 }
 
 g.time-slider {
@@ -51,12 +52,8 @@ path.selected-region {
 }
 
 table.selected-counties {
-    position: absolute;
-    left: 10px;
-    top: 10px;
     background-color: darkgrey;
     border-collapse: collapse;
-    opacity: 0.7;
 }
 
 table, tr, th, td.selected-counties {
