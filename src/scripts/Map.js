@@ -1,4 +1,9 @@
+import * as d3 from "d3";
+import { sliderBottom } from "d3-simple-slider";
+
 import Zoom from "./Zoom.js";
+import Tooltip from "./Tooltip.js";
+import "../css/map.css";
 
 const __CONFIG__ = {
   main_id: "map",
@@ -11,14 +16,6 @@ function select_main(config=__CONFIG__) {
 
 function select_sidebar(config=__CONFIG__) {
   return d3.select(`#${config.sidebar_id}`);
-}
-
-function properties2html(properties) {
-  var html = '';
-  for (const [key, value] of Object.entries(properties)) {
-    html += `${key}: ${value}<br />`
-  }
-  return html;
 }
 
 class StateMain {
@@ -86,52 +83,6 @@ class StateMain {
   }
 }
 
-class MapTooltip {
-  #OM;
-  offset_x = 8;
-  offset_y = 8;
-  duration = 200;
-  opacity = 0.8;
-  setDiv(div) {
-    this.div = div;
-    this.tooltip = div.append("div")
-        .classed("tooltip", true)
-        .style("opacity", 0);
-    return this;
-  }
-
-  setOM(OM) {
-    this.#OM = OM;
-    OM.subscribe("region-mouseover", this.handle_mouseover)
-      .subscribe("region-mousemove", this.handle_mousemove)
-      .subscribe("region-mouseleave", this.handle_mouseleave);
-
-    return this;
-  }
-
-  handle_mouseover = ({event, d}) => {
-    this.tooltip
-        .html(properties2html(d.properties))
-        .transition()
-        .duration(this.duration)
-        .style("opacity", this.opacity)
-        .style("left", `${event.clientX + this.offset_x}px`)
-        .style("top", `${event.clientY + this.offset_y}px`);
-  }
-
-  handle_mousemove = ({event, d}) => {
-    this.tooltip
-        .style("left", `${event.clientX + this.offset_x}px`)
-        .style("top", `${event.clientY + this.offset_y}px`);
-  }
-
-  handle_mouseleave = ({event, d}) => {
-    this.tooltip.transition()
-        .duration(this.duration)
-        .style("opacity", 0);
-  }
-}
-
 class SelectedTable {
   data = [];
 
@@ -192,8 +143,6 @@ class MapMain {
   adcode = "100000";
   center = [112.72, 32.357];
   scale = 360;
-  constructor() {
-  }
 
   setOM(OM) {
     this.#OM = OM;
@@ -358,7 +307,7 @@ class TimeSlider {
   render() {
     const years = d3.range(0, 17)
       .map(d => new Date(1997+d, 1, 1));
-    this.time_slider = d3.sliderBottom()
+    this.time_slider = sliderBottom()
         .min(d3.min(years))
         .max(d3.max(years))
         .step(1000*60*60*24*365)
@@ -400,7 +349,7 @@ export default async function map_main(OM) {
       .setOM(OM)
       .setSvg(svg);
 
-  const tooltip = new MapTooltip();
+  const tooltip = new Tooltip();
   tooltip
       .setDiv(div)
       .setOM(OM);

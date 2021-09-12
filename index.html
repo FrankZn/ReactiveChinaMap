@@ -1,14 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="">
-
 <head>
   <meta charset="utf-8">
   <title>Reactive China Map</title>
-  <link href="css/index.css" rel="stylesheet" type="text/css" />
-  <link href="css/map.css" rel="stylesheet" type="text/css" />
-  <script src="js/d3.v6.min.js"></script>
-  <script src="js/d3-simple-slider.min.js"></script>
 </head>
 
 <body>
@@ -26,11 +20,6 @@
       <a href="https://github.com/FrankZn/ReactiveChinaMap">Github</a>
     </div>
   </div>
-  <script type="module">
-    import main from './scripts/Map.js';
-    import ObserverManagement from './scripts/Observer.js';
-    let OM = new ObserverManagement();
-    let map = main(OM);
-  </script>
+  <script src="main.js"></script>
 </body>
 </html>

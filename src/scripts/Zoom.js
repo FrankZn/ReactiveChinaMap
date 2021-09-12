@@ -1,3 +1,5 @@
+import { zoom } from "d3";
+
 export default class Zoom {
     #OM;
   
@@ -8,13 +10,13 @@ export default class Zoom {
   
     setSvg(svg) {
       const rect = svg.node().getBoundingClientRect();
-      const zoom = d3.zoom()
+      const svg_zoom = zoom()
         .translateExtent([[-5, -5], [rect.width+5, rect.height+5]])
         .scaleExtent([1, 256])
         .on("start", this.handle_zoom_start)
         .on("zoom", this.handle_zoom)
         .on("end", this.handle_zoom_end);
-      svg.call(zoom);
+      svg.call(svg_zoom);
     }
   
     #k_before_zoom = 1;
